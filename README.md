@@ -16,7 +16,7 @@ The bread and butter of MyToDo are three commands: List, complete, delete. Its w
 
 Step-by-step instructions to set up MyToDo on Windows (PowerShell), Linux (Bash), and macOS (Zsh). After completing these steps, you will be able to add new tasks by simply typing:
 
-```
+```powershell
 mtd -a "my new task"
 ```
 
@@ -169,7 +169,7 @@ chmod +x /Users/yourusername/scripts/mtd.py
 **TUTORIAL:**
 
 ### 1. Add a Task
-```
+```powershell
 $ mtd -a "Complete the MyToDo tutorial"
 Added task "Complete the MyToDo tutorial".
 $ mtd -a "Relearn Emacs and GTD philosophy"
@@ -180,7 +180,7 @@ Tasks are added using the `-a` flag. Use quotation marks `"` or `'` to delimit t
 
 
 ### 2. List Tasks
-```
+```powershell
 $ mtd -l
 1. Complete the MyToDo tutorial
 2. Relearn Emacs and GTD philosophy 
@@ -191,27 +191,27 @@ $ mtd -l
 
 
 ### 3. Delete Tasks
-```
+```poweshell
 $ mtd -d 2 3 4 
 Deleted task "Figure out where these extra tasks came from"
 Deleted task "Relearn Emacs and GTD philosophy".
 Deleted task "Complain on Twitter about Spirit Airlines"
 ```
 
-```
+```powershell
 $ mtd -l
 1. Complete the MyToDo tutorial
-2. Send paper draft to Arnold for review
+2. Feel accomplished
 ```
 
 ### 4. Complete Tasks
-```
+```powershell
 $ mtd -c 1 2
 Completed task "Complete the MyToDo tutorial"
 Completed task "Feel accomplished"
 ```
 
-```
+```powershell
 $ mtd -l
 No tasks to show.
 ```
@@ -227,7 +227,7 @@ mtd -lc
 ```
 
 You can specify the `n` most recent or `n` oldest via `mtd -lc n` or `mtd -lc -n` where `n` is an integer.
-```
+```powershell
 $ mtd -lc -15
 ```
 
@@ -252,19 +252,19 @@ mtd -vl -sa
 ### Set Priorities
 
 You can set a priority when creating a task.
-```
+```powershell
 $ mtd -a "Uninstall Todoist" -p 3
 Added task "Uninstall Todoist".
 ```
 
-```
+```powershell
 $ mtd -l
 1. *P3* Uninstall Todoist
 ```
 
 Alternatively, you can update a task's priority using `-up idx n` whre `idx` is the task index and `n` is the new priority.
 
-```
+```powershell
 $ mtd -sp 1 4
 Set priority of "Uninstall Todoist" to 4.
 ```
@@ -276,7 +276,7 @@ Priorities range from `0` to `4`.
 
 ### Priority Sort
 Say you have a list like the following:
-```
+```powershell
 $ mtd -l
 1. *P2* Eat
 2. *P3* Drink
@@ -286,7 +286,7 @@ $ mtd -l
 ```
 
 You can sort it by priority using the `-ps` flag.
-```
+```powershell
 $ mtd -l -ps 
 4. *P4* Reproduce
 2. *P3* Drink
