@@ -295,8 +295,8 @@ $ mtd -l -ps
 3. Shelter
 ```
 
-### Final Tips and Tricks
-* Use negative indices to complete or delete tasks just like Python's native negative indexing for lists. `mtd -d -1` will delete the most recent task added.
+### Tips and Tricks
+* Use negative indices to complete or delete tasks just like Python's native negative indexing for lists. `mtd -d -1` will delete the most recent task added, for example.
 * Use `-h` to display help. This is particularly helpful for finding the longer flags such as `--list` for `-l`. Some may find the longer flags useful for initial learning.
 * Use the `-v` flag to get verbose information on the underlying task data including time of creation and time of completion.
 * Use `mtd -up idx 0` (where `idx` is the task index) to remove priority from a task.
