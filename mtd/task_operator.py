@@ -30,7 +30,6 @@ class TaskOperator:
         self.tasks: list[Task] = []
         self.current_time: datetime = datetime.now()
         self.current_list: str = get_current_list()
-        self.all_lists: bool = self.current_list == ALL_LIST_NAME
 
 
     def add_task(self, text, priority=None) -> None:
