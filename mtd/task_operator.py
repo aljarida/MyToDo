@@ -39,7 +39,7 @@ class TaskOperator:
         new_task = Task(text, list_name=self.current_list)
         self.tasks.append(new_task)
         self._write_tasks_to_file(self.incomplete_tasks_path, self.tasks, 'w')
-        self._print_and_log(f'Added task "{text}".')
+        self._print_and_log(f'Added task "{text}" to {self.current_list}.')
 
 
     def complete_tasks(self, indices) -> None:
@@ -86,7 +86,7 @@ class TaskOperator:
 
         print_format = PrintFormat.VERBOSE_REINDEXED if verbose else PrintFormat.SIMPLE_REINDEXED
 
-        print(f'{self.current_list}')
+        print(f'{self.current_list} *')
         self._print_tasks(filtered_tasks, print_format)
 
     
@@ -379,7 +379,7 @@ class TaskOperator:
     def _get_sorted_filtered_tasks(self, path: str) -> list[Task]:
         """Read tasks from file and filter by list name."""
         self._read_tasks(path)
-        return sorted(self._get_filtered_tasks_by_list(), key=lambda task: task.task_uuid)
+        return sorted(self._get_filtered_tasks_by_list(), key=lambda task: task.start_time)
 
 
     def _read_tasks(self, path: str) -> None:
