@@ -62,86 +62,8 @@ $ mtd -l
 No tasks to show.
 ```
 
-## Advanced Usage
-
-### View Completed Tasks
-You can list completed tasks using the `-lc` flag. By default, the most recent 5 tasks are listed.
-```
-mtd -lc
-```
-
-You can specify the `n` most recent or `n` oldest via `mtd -lc n` or `mtd -lc -n` where `n` is an integer.
-```powershell
-$ mtd -lc -15
-```
-
-You also list all completed tasks by adding the `-sa` flag.
-```
-mtd -lc -sa
-```
-
-### View Log
-View the log of prior actions by using the `-vl` flag. The five most recent actions will display. 
-
-```
-mtd -vl
-```
-
-To see all actions ever, add the `-sa` flag.
-
-```
-mtd -vl -sa
-```
-
-### Set Priorities
-
-You can set a priority when creating a task.
-```powershell
-$ mtd -a "Uninstall Todoist" -p 3
-Added task "Uninstall Todoist".
-```
-
-```powershell
-$ mtd -l
-1. *P3* Uninstall Todoist
-```
-
-Alternatively, you can update a task's priority using `-up idx n` whre `idx` is the task index and `n` is the new priority.
-
-```powershell
-$ mtd -sp 1 4
-Set priority of "Uninstall Todoist" to 4.
-```
-
-Priorities range from `0` to `4`.
-- `0` is a special number indicating lack of priority.
-- `1` is the first real priority and the lowest rank of prioritization.
-- `4` is the greatest priority. 
-
-### Priority Sort
-Say you have a list like the following:
-```powershell
-$ mtd -l
-1. *P2* Eat
-2. *P3* Drink
-3. Shelter
-4. *P4* Reproduce
-5. *P1* Socialize
-```
-
-You can sort it by priority using the `-ps` flag.
-```powershell
-$ mtd -l -ps 
-4. *P4* Reproduce
-2. *P3* Drink
-1. *P2* Eat
-5. *P1* Socialize
-3. Shelter
-```
-
 ### Tips and Tricks
 * Use negative indices to complete or delete tasks just like Python's native negative indexing for lists. `mtd -d -1` will delete the most recent task added, for example.
 * Use `-h` to display help. This is particularly helpful for finding the longer flags such as `--list` for `-l`. Some may find the longer flags useful for initial learning.
 * Use the `-v` flag to get verbose information on the underlying task data including time of creation and time of completion.
 * Use `mtd -up idx 0` (where `idx` is the task index) to remove priority from a task.
-
