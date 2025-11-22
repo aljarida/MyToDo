@@ -1,14 +1,6 @@
 from enum import Enum
 
 
-class SortStrategy(Enum):
-    """Enumeration for task sorting strategies."""
-    INDEX_ASCENDING = "index_ascending"
-    INDEX_DESCENDING = "index_descending"
-    PRIORITY_THEN_INDEX = "priority_then_index"
-    PRIORITY_THEN_INDEX_REVERSED = "priority_then_index_reversed"
-
-
 class PrintFormat(Enum):
     """Enumeration for task printing formats."""
     SIMPLE = "simple"
@@ -33,3 +25,7 @@ class Help(Enum):
     PULL = 'pull -> pull encrypted files from Dropbox and merge with local files'
     PUSH = 'push -> push encrypted files to Dropbox'
     SYNCHRONIZE = 'synchronize -> pull encrypted files from Dropbox, merge with local files, then push back to Dropbox'
+    CHECKOUT_LIST = 'checkout-list -> switch to a different list'
+    SHOW_LISTS = 'show-lists -> show all available lists'
+    DELETE_LIST = 'delete-list -> delete a list and all its tasks'
+    NEW_LIST = 'new-list -> create a new list'

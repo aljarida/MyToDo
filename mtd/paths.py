@@ -9,6 +9,7 @@ ENCRYPTED_DIR: str = os.path.join(DATA_DIR, 'encrypted')
 INCOMPLETE_TASKS_FILE: str = os.path.join(PLAINTEXT_DIR, 'tasks.json')
 COMPLETED_TASKS_FILE: str = os.path.join(PLAINTEXT_DIR, 'completed_tasks.json')
 LOG_FILE: str = os.path.join(PLAINTEXT_DIR, 'history.log')
+STATE_FILE: str = os.path.join(DATA_DIR, '.state')
 
 DATA_FILES: list = [INCOMPLETE_TASKS_FILE, COMPLETED_TASKS_FILE, LOG_FILE]
 TASK_FILES: list = [INCOMPLETE_TASKS_FILE, COMPLETED_TASKS_FILE]
