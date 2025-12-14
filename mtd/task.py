@@ -57,4 +57,4 @@ class Task:
 
     def __repr__(self) -> str:
         finished: str = 'COMPLETE' if self.end_time else 'INCOMPLETE'
-        return f"Task({self.simple_to_string()}, {finished})"
+        return f"Task({self.simple_to_string()}, {self.list_name}, {finished})"

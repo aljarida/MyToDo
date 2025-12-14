@@ -29,3 +29,4 @@ class Help(Enum):
     SHOW_LISTS = 'show-lists -> show all available lists'
     DELETE_LIST = 'delete-list -> delete a list and all its tasks'
     NEW_LIST = 'new-list -> create a new list'
+    SEND_TO_LIST = 'send-to-list -> assign a task to a list by task number and list name'

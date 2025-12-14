@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime
-from typing import Optional
+from typing import Iterable, Optional
 from collections import defaultdict
 
 from .paths import TASK_FILES, get_encrypted_file_path
@@ -32,7 +32,7 @@ class TaskOperator:
         self.current_list: str = get_current_list()
 
 
-    def add_task(self, text, priority=None) -> None:
+    def add_task(self, text) -> None:
         """Write task to incomplete tasks file via appending, then print the updated task-list."""
         self._read_tasks(self.incomplete_tasks_path)
         new_task = Task(text, list_name=self.current_list)
@@ -85,15 +85,15 @@ class TaskOperator:
 
         print_format = PrintFormat.VERBOSE_REINDEXED if verbose else PrintFormat.SIMPLE_REINDEXED
 
-        print(f'{self.current_list} *')
+        print(f'   {self.current_list}')
         self._print_tasks(filtered_tasks, print_format)
 
     
     def list_completed_tasks(self, n, show_all, verbose) -> None:
         """Print completed tasks. Filters by current list. By default, lists five most recently completed tasks."""
-        filtered_tasks = self._get_sorted_filtered_tasks(self.completed_tasks_path)
+        tasks_to_show  = self._get_sorted_filtered_tasks(self.completed_tasks_path)
         if not show_all:
-            tasks_to_show = self._get_n_completed_tasks(filtered_tasks, n)
+            tasks_to_show = self._get_n_completed_tasks(tasks_to_show, n)
         
         print_format = PrintFormat.VERBOSE_REINDEXED if verbose else PrintFormat.SIMPLE_REINDEXED
         self._print_tasks(tasks_to_show, print_format)
@@ -338,7 +338,33 @@ class TaskOperator:
         self._print_and_log(f'Switched to list "{list_name}".')
 
 
-    def _delete_incomplete_tasks_by_uuid(self, task_uuids_to_delete: list[Task], completing_tasks: bool) -> None:
+    def send_task_to_list(self, task_index: int, list_name: str) -> None:
+        """Assign a task to a list by task number and list name."""
+        list_name = list_name.upper().strip()
+
+        existing_lists: list[str] = self._get_all_lists()
+        if list_name not in existing_lists and list_name != ALL_LIST_NAME:
+            print(f'List "{list_name}" does not exist. Please use `mtd -nl "{list_name}"` to create it.')
+            return
+        
+        filtered_tasks = self._get_sorted_filtered_tasks(self.incomplete_tasks_path)
+        
+        task_index = self._convert_negatives([task_index], len(filtered_tasks))[0]
+        
+        if not (1 <= task_index <= len(filtered_tasks)):
+            print(f'Task index {task_index} is out of range. Current list has {len(filtered_tasks)} task(s).')
+            return
+        
+        task_to_update = filtered_tasks[task_index - 1]
+        prior_list = task_to_update.list_name if task_to_update.list_name else ALL_LIST_NAME
+        filtered_tasks[task_index - 1].list_name = list_name if list_name != ALL_LIST_NAME else None
+
+
+        self._write_tasks_to_file(self.incomplete_tasks_path, filtered_tasks, 'w')
+        self._print_and_log(f'Moved task "{task_to_update.text}" from {prior_list} to {list_name}.')
+
+
+    def _delete_incomplete_tasks_by_uuid(self, task_uuids_to_delete: Iterable[str], completing_tasks: bool) -> None:
         """Delete incomplete tasks based on supplied task UUIDs."""
         matching_tasks = [task for task in self.tasks if task.task_uuid in task_uuids_to_delete]
         remaining_tasks = [task for task in self.tasks if task.task_uuid not in task_uuids_to_delete]
@@ -354,11 +380,12 @@ class TaskOperator:
         res: list[str] = [ALL_LIST_NAME]
 
         additional_lists = get_additional_lists()
+        additional_lists.append(ALL_LIST_NAME)
 
         self._read_tasks(self.incomplete_tasks_path)
         list_names = set()
         for task in self.tasks:
-            if task.list_name is not None:
+            if task.list_name and task.list_name not in list_names:
                 list_names.add(task.list_name)
 
         assert list_names.issubset(additional_lists)
