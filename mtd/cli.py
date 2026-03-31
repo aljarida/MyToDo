@@ -28,7 +28,7 @@ def get_parser() -> argparse.ArgumentParser:
         parser.add_argument('-sl', '--show-lists', action='store_true', dest='sl', help=Help.SHOW_LISTS.value)
         parser.add_argument('-dl', '--delete-list', nargs=1, type=str, dest='dl', help=Help.DELETE_LIST.value)
         parser.add_argument('-nl', '--new-list', nargs=1, type=str, dest='nl', help=Help.NEW_LIST.value)
-        parser.add_argument('-stl', '--send-to-list', nargs=2, dest='stl', help=Help.SEND_TO_LIST.value)
+        parser.add_argument('-stl', '--send-to-list', nargs='*', dest='stl', help=Help.SEND_TO_LIST.value)
     
     add_list_commands(parser)
     add_edit_commands(parser)
@@ -68,7 +68,7 @@ def process_parser(parser: argparse.ArgumentParser, task_operator: TaskOperator)
     elif args.nl:
         task_operator.create_list(args.nl[0])
     elif args.stl:
-        task_operator.send_task_to_list(args.stl[0], args.stl[1])
+        task_operator.send_tasks_to_list(args.stl[0], args.stl[1:])
     else:
         parser.print_help()
 

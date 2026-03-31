@@ -8,8 +8,8 @@ from .paths import TASK_FILES, get_encrypted_file_path
 from .enums import PrintFormat
 from .task import Task
 from .state import (
-    get_current_list, set_current_list, RESERVED_LIST_NAMES, ALL_LIST_NAME,
-    get_additional_lists, add_additional_list, remove_additional_list
+    get_current_list, select_list, RESERVED_LIST_NAMES, ALL_LIST_NAME,
+    get_lists, add_list_or_lists, remove_list
 )
 
 
@@ -298,7 +298,7 @@ class TaskOperator:
             print(f'List "{list_name}" already exists.')
             return
         
-        add_additional_list(list_name)
+        add_list_or_lists(list_name)
         self._print_and_log(f'Created list "{list_name}".')
 
    
@@ -320,7 +320,7 @@ class TaskOperator:
         if tasks_to_delete_uuids:
             self._delete_incomplete_tasks_by_uuid(list(tasks_to_delete_uuids), completing_tasks=False)
         
-        remove_additional_list(list_name)
+        remove_list(list_name)
         conditional_s: str = '' if len(tasks_to_delete_uuids) == 1 else 's'
         self._print_and_log(f'Deleted list "{list_name}" and {len(tasks_to_delete_uuids)} task{conditional_s}.')
 
@@ -334,35 +334,43 @@ class TaskOperator:
             print(f'List "{list_name}" does not exist. Please use `mtd -nl "{list_name}"` to create it.')
             return 
 
-        set_current_list(list_name)
+        select_list(list_name)
         self._print_and_log(f'Switched to list "{list_name}".')
 
 
-    def send_task_to_list(self, task_index: int, list_name: str) -> None:
-        """Assign a task to a list by task number and list name."""
+    def send_tasks_to_list(self, list_name, task_indices) -> None:
+        """Assign tasks to a list by task number and list name."""
         list_name = list_name.upper().strip()
 
         existing_lists: list[str] = self._get_all_lists()
         if list_name not in existing_lists and list_name != ALL_LIST_NAME:
             print(f'List "{list_name}" does not exist. Please use `mtd -nl "{list_name}"` to create it.')
             return
-        
-        filtered_tasks = self._get_sorted_filtered_tasks(self.incomplete_tasks_path)
-        
-        task_index = self._convert_negatives([task_index], len(filtered_tasks))[0]
-        
-        if not (1 <= task_index <= len(filtered_tasks)):
-            print(f'Task index {task_index} is out of range. Current list has {len(filtered_tasks)} task(s).')
+
+        if len(task_indices) == 0:
+            print("No tasks were provided.")
             return
         
-        task_to_update = filtered_tasks[task_index - 1]
-        prior_list = task_to_update.list_name if task_to_update.list_name else ALL_LIST_NAME
-        filtered_tasks[task_index - 1].list_name = list_name if list_name != ALL_LIST_NAME else None
+        filtered_tasks = self._get_sorted_filtered_tasks(self.incomplete_tasks_path)
 
+        task_indices = self._convert_negatives(map(int, task_indices), len(filtered_tasks))
+       
+        for task_index in task_indices:
+            if not (1 <= task_index <= len(filtered_tasks)):
+                print(f'Task index {task_index} is out of range. Current list has {len(filtered_tasks)} task(s).')
+                return
+
+        task_text_and_prior_lists: list[tuple[str, str]] = []
+        
+        for task_index in task_indices:
+            task_to_update = filtered_tasks[task_index - 1]
+            task_text_and_prior_lists.append((task_to_update.text, task_to_update.list_name))
+            filtered_tasks[task_index - 1].list_name = list_name
 
         self._write_tasks_to_file(self.incomplete_tasks_path, filtered_tasks, 'w')
-        self._print_and_log(f'Moved task "{task_to_update.text}" from {prior_list} to {list_name}.')
 
+        for t, l in task_text_and_prior_lists:
+            self._print_and_log(f'Moved task "{t}" from {l} to {list_name}.')
 
     def _delete_incomplete_tasks_by_uuid(self, task_uuids_to_delete: Iterable[str], completing_tasks: bool) -> None:
         """Delete incomplete tasks based on supplied task UUIDs."""
@@ -376,21 +384,20 @@ class TaskOperator:
 
     
     def _get_all_lists(self) -> list[str]:
-        """Get all list names from state file. Always includes 'All'."""
-        res: list[str] = [ALL_LIST_NAME]
-
-        additional_lists = get_additional_lists()
-        additional_lists.append(ALL_LIST_NAME)
+        """Get all list names. Reconile the state list of lists with the lists found in incomplete tasks."""
+        all_recorded_lists = set(get_lists())
 
         self._read_tasks(self.incomplete_tasks_path)
-        list_names = set()
+        found_list_names = set[str]()
         for task in self.tasks:
-            if task.list_name and task.list_name not in list_names:
-                list_names.add(task.list_name)
+            if task.list_name and task.list_name not in found_list_names:
+                found_list_names.add(task.list_name)
 
-        assert list_names.issubset(additional_lists)
+        if all_recorded_lists.symmetric_difference(found_list_names):
+            add_list_or_lists(*found_list_names.difference(all_recorded_lists))
 
-        res.extend(additional_lists)
+        res = get_lists()
+        assert set(res) == all_recorded_lists.union(found_list_names)
         return res
 
 
