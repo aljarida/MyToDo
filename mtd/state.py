@@ -35,11 +35,16 @@ def select_list(list_name: str) -> None:
 
 def add_list_or_lists(*list_names: str) -> None:
     """Add one or more lists to the state list."""
+    for list_name in list_names:
+        if list_name in RESERVED_LIST_NAMES:
+            print(f"Failed to add list '{list_name}'. '{list_name}' is reserved and cannot be removed.")
+            return
+
     all_lists = get_lists()
 
-    for name in list_names:
-        if name in all_lists:
-            print(f"Failed to add any new list. '{name}' already exists in the database.")
+    for list_name in list_names:
+        if list_name in all_lists:
+            print(f"Failed to add any new list. '{list_name}' already exists in the database.")
             return
     
     all_lists.extend(list_names)
@@ -49,8 +54,8 @@ def add_list_or_lists(*list_names: str) -> None:
 
 def remove_list(list_name: str) -> None:
     """Remove a list from the additional lists in the state file."""
-    if list_name == ALL_LIST_NAME:
-        print(f"Failed to remove list '{ALL_LIST_NAME}'. '{ALL_LIST_NAME}' is reserved and cannot be removed.")
+    if list_name in RESERVED_LIST_NAMES:
+        print(f"Failed to remove list '{list_name}'. '{list_name}' is reserved and cannot be removed.")
         return
 
     all_lists = get_lists()
