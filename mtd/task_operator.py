@@ -198,7 +198,6 @@ class TaskOperator:
                 incomplete_tasks_to_add.append(D_incomplete_task)
         
         # 4. Any incomplete task in D that is completed in P -> ignore
-
         if not tasks_to_complete and not completed_tasks_to_add and not incomplete_tasks_to_add:
             self._print_and_log("Local files are already up to date with Dropbox files.")
             return True
@@ -207,6 +206,7 @@ class TaskOperator:
             # Directly complete tasks by UUID (bypassing index-based complete_tasks)
             tasks_to_complete_list = [P_incomplete_by_uuid[uuid_key] for uuid_key in tasks_to_complete]
             for task in tasks_to_complete_list:
+                # TODO: Update this to accept a copy of the nonlocal end time.
                 task.mark_end_time()
             P_completed_tasks.extend(tasks_to_complete_list)
             # Remove from incomplete
